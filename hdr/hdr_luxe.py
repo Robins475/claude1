@@ -28,6 +28,14 @@ SATURATION = 0.88          # global chroma multiplier
 CLARITY = 0.18             # large-radius local contrast
 SHARPEN = 0.35
 MAX_LONG_EDGE = 6000
+CONTRAST = 0.0
+SKY_BOOST = 0.0
+
+PROFILES = {
+    "interior": {},
+    "exterior": dict(TARGET_MEDIAN_L=66.0, BLACK_POINT_L=1.0, SATURATION=1.05, CLARITY=0.08,
+                     CONTRAST=0.35, SKY_BOOST=1.0, WALL_WARMTH_B=1.5),
+}
 
 
 def load(path):
@@ -131,6 +139,11 @@ def tone(lab):
     L = L ** np.clip(g, 0.45, 1.6)
     # soft shoulder so whites stay clean but not clipped
     L = BLACK_POINT_L + (WHITE_POINT_L - BLACK_POINT_L) * (L - 0.06 * L * (1 - L))
+    if CONTRAST:
+        # gentle S-curve around the midpoint for punchier exteriors
+        x = (L - BLACK_POINT_L) / (WHITE_POINT_L - BLACK_POINT_L)
+        x = x + CONTRAST * (x - 0.5) * (1 - np.abs(2 * x - 1))
+        L = BLACK_POINT_L + (WHITE_POINT_L - BLACK_POINT_L) * np.clip(x, 0, 1)
     lab[..., 0] = L
     return lab
 
@@ -139,6 +152,14 @@ def colour(lab):
     a, b = lab[..., 1], lab[..., 2]
     lab[..., 1] = a * SATURATION
     lab[..., 2] = b * SATURATION
+    if SKY_BOOST:
+        # deepen clear blue sky (bright, blue-ish, upper part of frame) without touching white walls
+        h = lab.shape[0]
+        rows = np.linspace(1, 0, h)[:, None] ** 0.5
+        blue = np.clip((-lab[..., 2] - 4) / 10, 0, 1) * np.clip((lab[..., 0] - 45) / 20, 0, 1)
+        m = cv2.GaussianBlur((blue * rows).astype(np.float32), (0, 0), 6)
+        lab[..., 2] -= SKY_BOOST * m * 12
+        lab[..., 0] -= SKY_BOOST * m * 6
     return lab
 
 
@@ -216,6 +237,9 @@ def process(paths, out_path):
 
 
 def main(argv):
+    if argv and argv[0].startswith("--profile="):
+        globals().update(PROFILES[argv[0].split("=", 1)[1]])
+        argv = argv[1:]
     if len(argv) >= 3 and argv[0] == "--batch":
         src, dst = argv[1], argv[2]
         os.makedirs(dst, exist_ok=True)

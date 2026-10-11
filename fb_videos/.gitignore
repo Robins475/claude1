@@ -1,0 +1,3 @@
+assets/*.onnx
+assets/*.onnx.json
+__pycache__/

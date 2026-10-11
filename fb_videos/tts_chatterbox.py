@@ -28,7 +28,7 @@ tone = os.environ.get("TONE", "hype")
 ex, cfg = TONES[tone]
 model = ChatterboxTTS.from_pretrained(device="cuda" if torch.cuda.is_available() else "cpu")
 for text, out in jobs:
-    torch.manual_seed(7)
+    torch.manual_seed(int(os.environ.get("SEED", 7)))
     wav = model.generate(text, audio_prompt_path=REF, exaggeration=ex, cfg_weight=cfg, temperature=0.8)
     ta.save(out, wav, model.sr)
     print(f"{out}: {wav.shape[1] / model.sr:.1f}s", flush=True)

@@ -1,0 +1,183 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: 'Nunito'; font-weight: 400 800; src: url('../floorplans/austral_lot22/Nunito-latin.woff2') format('woff2'); }
+@page { size: 110mm 200mm; margin: 0; }
+:root { --ink:#17201B; --muted:#5C6660; --line:#DCE3DD; --soft:#F2F6F3; --accent:#1F6B4F; --accent-soft:#E2F0E8; --warn:#9A5B00; --warn-soft:#FBEFD9; --bad:#B3261E; --bad-soft:#FBE3E1; }
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; }
+body { font-family: Nunito, 'Helvetica Neue', Arial, sans-serif; color: var(--ink); font-size: 10.8pt; line-height: 1.42; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width:110mm; height:200mm; padding: 9mm 7.5mm 8mm; position: relative; page-break-after: always; overflow: hidden; }
+.page:last-child { page-break-after: auto; }
+.foot { position:absolute; left:7.5mm; right:7.5mm; bottom:5mm; font-size:6.8pt; color:var(--muted); display:flex; justify-content:space-between; border-top:0.3mm solid var(--line); padding-top:1.6mm; }
+.eyebrow { font-size:7.2pt; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:800; }
+h1 { font-size:20pt; line-height:1.08; margin:2mm 0 2.5mm; font-weight:800; letter-spacing:-.01em; }
+h2 { font-size:13.5pt; margin:0 0 2.5mm; font-weight:800; line-height:1.15; }
+h3 { font-size:10pt; margin:3.2mm 0 1.4mm; font-weight:800; }
+p { margin:0 0 2mm; }
+.lead { font-size:10pt; color:var(--muted); }
+.card { background:var(--soft); border-radius:3mm; padding:3mm 3.4mm; margin:0 0 2.6mm; }
+.card.green { background:var(--accent-soft); }
+.card.warn { background:var(--warn-soft); }
+.card.bad { background:var(--bad-soft); }
+.card b.t { display:block; font-size:10pt; margin-bottom:.8mm; }
+ul.check { list-style:none; padding:0; margin:0; }
+ul.check li { padding:1.5mm 0 1.5mm 6.5mm; position:relative; border-bottom:0.25mm solid var(--line); }
+ul.check li:last-child { border-bottom:0; }
+ul.check li::before { content:""; position:absolute; left:0; top:2.2mm; width:3.6mm; height:3.6mm; border:0.45mm solid var(--accent); border-radius:1mm; }
+ul.x li::before { content:"✕"; border:0; color:var(--bad); font-weight:800; top:1.3mm; font-size:9pt; width:auto; height:auto; }
+table { width:100%; border-collapse:collapse; font-size:9.8pt; margin:1mm 0 2.5mm; }
+th { text-align:left; font-size:7pt; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:1.2mm 1mm; border-bottom:0.4mm solid var(--ink); }
+td { padding:1.6mm 1mm; border-bottom:0.25mm solid var(--line); vertical-align:top; }
+td.n { font-weight:800; white-space:nowrap; }
+.tag { display:inline-block; font-size:6.8pt; font-weight:800; padding:.4mm 1.6mm; border-radius:2mm; background:var(--accent-soft); color:var(--accent); }
+.tag.w { background:var(--warn-soft); color:var(--warn); }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:2.4mm; }
+.big { font-size:17pt; font-weight:800; line-height:1; color:var(--accent); }
+.small { font-size:8.4pt; color:var(--muted); }
+ol.steps { padding-left:0; margin:0; list-style:none; counter-reset:s; }
+ol.steps li { counter-increment:s; position:relative; padding:0 0 2.6mm 8.5mm; }
+ol.steps li::before { content:counter(s); position:absolute; left:0; top:0; width:5.6mm; height:5.6mm; border-radius:50%; background:var(--accent); color:#fff; font-weight:800; font-size:8pt; display:grid; place-items:center; }
+.src { font-size:8pt; color:var(--muted); line-height:1.35; }
+.src li { margin-bottom:1.2mm; word-break:break-word; }
+</style></head><body>
+
+<!-- 1. Cover / quick check -->
+<section class="page">
+  <div class="eyebrow">NSW · Sydney · Pocket guide</div>
+  <h1>Can I build a granny flat?</h1>
+  <p class="lead">The state rules for a secondary dwelling (granny flat) under the NSW Housing SEPP 2021. They apply across all of Sydney.</p>
+  <div class="card green">
+    <b class="t">The 60-second check</b>
+    <ul class="check">
+      <li>Zoned <b>residential</b> (R1, R2, R3 or R4)</li>
+      <li>Block is <b>at least 450 m²</b></li>
+      <li>Block is <b>at least 12 m wide</b> at the building line</li>
+      <li>Granny flat <b>60 m² or less</b></li>
+      <li>Bushfire rating is <b>not BAL-40 or Flame Zone</b></li>
+      <li>Not a <b>flood control lot</b>, heritage item or conservation area</li>
+    </ul>
+  </div>
+  <p><b>All ticks?</b> You can likely use the <b>fast route</b>: a private certifier approves it in about 2–3 weeks, with no neighbour notification.</p>
+  <p><b>Any cross?</b> It's not a dead end. Lodge a <b>development application (DA)</b> with your council instead.</p>
+  <div class="foot"><span>Granny flat rules · NSW</span><span>1 / 6</span></div>
+</section>
+
+<!-- 2. Two routes -->
+<section class="page">
+  <div class="eyebrow">Approval</div>
+  <h2>Two ways to get approved</h2>
+  <div class="card green">
+    <b class="t">Fast route: Complying Development Certificate (CDC)</b>
+    <p>A <b>private certifier</b> approves it if <b>every</b> state standard is met. It usually takes about 10–20 business days, and neighbours aren't notified.</p>
+  </div>
+  <div class="card">
+    <b class="t">Council route: Development Application (DA)</b>
+    <p>For anything that doesn't fit the fast route. Your <b>council</b> assesses it against its local plans (LEP and DCP). It usually takes 40–90+ days, and neighbours are notified.</p>
+    <p class="small">Some councils allow bigger granny flats or smaller blocks through a DA.</p>
+  </div>
+  <h3>Rules for every granny flat</h3>
+  <ul class="check">
+    <li><b>One</b> main house + <b>one</b> granny flat per block</li>
+    <li>The block <b>can't be subdivided</b>, so you can't sell the flat separately</li>
+    <li>The state rules require <b>no extra car parking</b></li>
+    <li>The block needs lawful access to a <b>public road</b></li>
+    <li>Not allowed on <b>R5 Large Lot Residential</b> land through the fast route</li>
+  </ul>
+  <div class="foot"><span>Granny flat rules · NSW</span><span>2 / 6</span></div>
+</section>
+
+<!-- 3. Size & lot standards -->
+<section class="page">
+  <div class="eyebrow">Fast-route standards · 1 of 2</div>
+  <h2>Block size, width and floor area</h2>
+  <div class="two">
+    <div class="card green"><div class="big">450 m²</div><span class="small">minimum block size</span></div>
+    <div class="card green"><div class="big">60 m²</div><span class="small">maximum granny flat floor area*</span></div>
+  </div>
+  <h3>Minimum width at the building line</h3>
+  <table>
+    <tr><th>Block size</th><th>Width</th></tr>
+    <tr><td>450 – 900 m²</td><td class="n">12 m</td></tr>
+    <tr><td>900 – 1,500 m²</td><td class="n">15 m</td></tr>
+    <tr><td>Over 1,500 m²</td><td class="n">18 m</td></tr>
+  </table>
+  <p class="small">Battle-axe blocks: the access handle must be at least 3 m wide, with a 12 m × 12 m area clear of the handle.</p>
+  <h3>Total floor area (house + granny flat + attached garage, decks etc.)</h3>
+  <table>
+    <tr><th>Block size</th><th>Maximum total</th></tr>
+    <tr><td>450 – 600 m²</td><td class="n">330 m²</td></tr>
+    <tr><td>600 – 900 m²</td><td class="n">380 m²</td></tr>
+    <tr><td>Over 900 m²</td><td class="n">430 m²</td></tr>
+  </table>
+  <p class="small">*Larger only if another planning instrument allows it. Blocks of 450–900 m² also have a 50% maximum site coverage.</p>
+  <div class="foot"><span>Housing SEPP 2021 · Schedule 1</span><span>3 / 6</span></div>
+</section>
+
+<!-- 4. Setbacks, height, open space -->
+<section class="page">
+  <div class="eyebrow">Fast-route standards · 2 of 2</div>
+  <h2>Setbacks, height and outdoor space</h2>
+  <table>
+    <tr><th>Block size</th><th>Side</th><th>Rear</th></tr>
+    <tr><td>450 – 900 m²</td><td class="n">0.9 m</td><td class="n">3 m</td></tr>
+    <tr><td>900 – 1,500 m²</td><td class="n">1.5 m</td><td class="n">5 m</td></tr>
+    <tr><td>Over 1,500 m²</td><td class="n">2.5 m</td><td class="n">Larger – check</td></tr>
+  </table>
+  <p class="small">Rear setbacks increase for parts of the building above 3.8 m high.</p>
+  <ul class="check">
+    <li><b>Height:</b> 8.5 m maximum above existing ground level</li>
+    <li><b>Front:</b> behind the main house's building line</li>
+    <li><b>Corner blocks:</b> at least 3 m from a secondary road boundary</li>
+    <li><b>Next to a park or reserve:</b> at least 3 m from that boundary</li>
+    <li><b>Private open space:</b> at least 24 m², which can be shared with the main house</li>
+    <li><b>Energy:</b> BASIX certificate required</li>
+  </ul>
+  <div class="card warn"><b class="t">Single-storey tip</b>Most granny flats are single storey and under 3.8 m high, so on a typical 450–900 m² block you need 0.9 m on the sides and 3 m at the rear.</div>
+  <div class="foot"><span>Housing SEPP 2021 · Schedule 1</span><span>4 / 6</span></div>
+</section>
+
+<!-- 5. Deal-breakers + how to check -->
+<section class="page">
+  <div class="eyebrow">Before you buy or build</div>
+  <h2>What rules out the fast route</h2>
+  <ul class="check x">
+    <li><b>Bushfire rating BAL-40 or Flame Zone.</b> On any bushfire-prone land, the flat must also meet Planning for Bush Fire Protection</li>
+    <li><b>Flood control lot</b></li>
+    <li><b>Heritage item or heritage conservation area</b></li>
+    <li><b>Block under 450 m²</b>, unless the flat is built <i>inside</i> the existing house</li>
+    <li><b>Sewer or easement</b> where you want to build. Needs Sydney Water approval</li>
+  </ul>
+  <h3>How to check any address</h3>
+  <ol class="steps">
+    <li><b>NSW Planning Portal Spatial Viewer</b> (free): zoning, lot size, bushfire, flood and heritage maps</li>
+    <li><b>Section 10.7 planning certificate</b> from the council. It's already in the contract when you buy</li>
+    <li><b>Survey or site plan:</b> width at the building line and the boundaries</li>
+    <li><b>Sydney Water "Tap in"</b>: where the sewer runs</li>
+    <li><b>Bushfire (BAL) assessment</b> if the land is bushfire-prone</li>
+    <li><b>Free site check</b> from a granny flat builder or certifier</li>
+  </ol>
+  <div class="foot"><span>Granny flat rules · NSW</span><span>5 / 6</span></div>
+</section>
+
+<!-- 6. Sources -->
+<section class="page">
+  <div class="eyebrow">Sources & limits</div>
+  <h2>Where these rules come from</h2>
+  <p>Checked October 2026 against the NSW Government's planning pages and the consolidated text of <b>State Environmental Planning Policy (Housing) 2021</b>: s.54 and Schedule 1 (secondary dwellings), and s.57 (bushfire).</p>
+  <div class="card warn"><b class="t">Good to know</b>
+    <p>Rules change. Your <b>certifier</b> or <b>council</b> gives the final answer for a specific block.</p>
+    <p style="margin:0">Councils add their own rules on the DA route. For example, Lake Macquarie's plan asks for 16 m² of private open space.</p>
+  </div>
+  <ul class="src">
+    <li>NSW Planning – Secondary dwellings: planning.nsw.gov.au/policy-and-legislation/housing/housing-sepp/secondary-dwellings</li>
+    <li>Housing SEPP 2021 (official): legislation.nsw.gov.au – epi-2021-0714</li>
+    <li>Housing SEPP 2021 Schedule 1 (consolidated): austlii.edu.au/au/legis/nsw/consol_reg/sepp2021448/sch1.html</li>
+    <li>Housing SEPP 2021 s.57 bushfire: austlii.edu.au/au/legis/nsw/consol_reg/sepp2021448/s57.html</li>
+    <li>NSW Planning Portal Spatial Viewer: planningportal.nsw.gov.au/spatialviewer</li>
+    <li>Sydney Water Tap in: sydneywater.com.au/tapin</li>
+  </ul>
+  <p class="small">Not legal advice. Prepared for Robin Jajju, 101 Studios.</p>
+  <div class="foot"><span>Granny flat rules · NSW</span><span>6 / 6</span></div>
+</section>
+</body></html>

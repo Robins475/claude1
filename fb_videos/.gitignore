@@ -2,3 +2,4 @@ assets/*.onnx
 assets/*.onnx.json
 assets/voices-*.bin
 __pycache__/
+.venv-tts

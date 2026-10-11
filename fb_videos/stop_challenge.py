@@ -12,7 +12,7 @@ Recreates the mechanics of the reference reel:
     it's very hard to pause on (but one frame per swing really is perfect)
   - video length is a whole number of swings, so it loops seamlessly
     (Facebook counts replays -> more watch time)
-  - natural male voiceover via Kokoro neural TTS (offline)
+  - human-sounding 'hype' male voiceover via Chatterbox (Kokoro fallback), offline
 
 Usage:
   python3 stop_challenge.py --hero assets/1f99a.svg --item assets/1f345.svg out.mp4
@@ -155,6 +155,30 @@ def tts(text, wav_path, voice=VOICE, speed=0.92, gap=0.3):
     return len(audio) / sr
 
 
+# Chatterbox (default): same fenrir voice, human "hype" delivery. Needs its own venv,
+# see tts_chatterbox.py. Falls back to Kokoro if that venv isn't there.
+TTS_PY = os.environ.get("TTS_PY", os.path.join(HERE, ".venv-tts", "bin", "python"))
+
+
+def tts_expressive(jobs):
+    """jobs: list of (text, wav_path). One model load for the whole list."""
+    import json
+    if not os.path.exists(TTS_PY):
+        print("Chatterbox venv not found -> using Kokoro voice")
+        for text, wav in jobs:
+            tts(text, wav)
+        return
+    jf = os.path.join(tempfile.mkdtemp(), "jobs.json")
+    json.dump(jobs, open(jf, "w"))
+    subprocess.run([TTS_PY, os.path.join(HERE, "tts_chatterbox.py"), jf], check=True,
+                   stderr=subprocess.DEVNULL)
+
+
+def wav_len(path):
+    import soundfile as sf
+    return sf.info(path).duration
+
+
 def ffmpeg_bin():
     for c in ("ffmpeg",):
         if subprocess.run(["which", c], capture_output=True).returncode == 0:
@@ -165,7 +189,7 @@ def ffmpeg_bin():
 
 # ---------------------------------------------------------------- render
 def render(hero_path, item_path, out_path, script=DEFAULT_SCRIPT, hero_h=760, item_h=230,
-           tag=True):
+           tag=True, voice_wav=None):
     hero = load_rgba(hero_path, hero_h, max_w=560)
     item = load_rgba(item_path, item_h, max_w=item_h)
     slots = layout(hero, item)
@@ -181,8 +205,10 @@ def render(hero_path, item_path, out_path, script=DEFAULT_SCRIPT, hero_h=760, it
         bg.alpha_composite(tag_image(), (68, 52))
 
     tmp = tempfile.mkdtemp()
-    wav = os.path.join(tmp, "vo.wav")
-    vo_len = tts(script, wav) if script else 0.0
+    wav = voice_wav or os.path.join(tmp, "vo.wav")
+    if script and not voice_wav:
+        tts_expressive([(script, wav)])
+    vo_len = wav_len(wav) if script else 0.0
     swings = max(8, math.ceil((vo_len + 0.6) * FPS / PERIOD_F))
     n_frames = swings * PERIOD_F
 
@@ -223,9 +249,12 @@ def main():
     a = ap.parse_args()
     if a.batch:
         os.makedirs(a.outdir, exist_ok=True)
-        for name, h, i, s in PRESETS:
+        tmp = tempfile.mkdtemp()
+        wavs = [os.path.join(tmp, name + ".wav") for name, *_ in PRESETS]
+        tts_expressive([(s, w) for (_, _, _, s), w in zip(PRESETS, wavs)])
+        for (name, h, i, s), w in zip(PRESETS, wavs):
             render(os.path.join(ASSETS, h + ".svg"), os.path.join(ASSETS, i + ".svg"),
-                   os.path.join(a.outdir, name + ".mp4"), s)
+                   os.path.join(a.outdir, name + ".mp4"), s, voice_wav=w)
         return
     if not (a.hero and a.item and a.out):
         ap.error("need --hero, --item and an output path (or --batch)")

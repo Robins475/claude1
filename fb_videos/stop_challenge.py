@@ -7,11 +7,12 @@ Recreates the mechanics of the reference reel:
   - one big "hero" object on top, a pyramid of 6 small objects underneath
   - thin red outlines of every object stay fixed
   - all objects slide left-right together on a sine wave (1.4 s per swing)
-  - they line up with the outlines near the FASTEST point of the swing, so
+  - outlines are centred on screen and objects swing symmetrically around them;
+    they line up at the FASTEST point of the swing (dead centre), so
     it's very hard to pause on (but one frame per swing really is perfect)
   - video length is a whole number of swings, so it loops seamlessly
     (Facebook counts replays -> more watch time)
-  - male voiceover via Piper TTS (offline)
+  - natural male voiceover via Kokoro neural TTS (offline)
 
 Usage:
   python3 stop_challenge.py --hero assets/1f99a.svg --item assets/1f345.svg out.mp4
@@ -30,11 +31,10 @@ ASSETS = os.path.join(HERE, "assets")
 W, H, FPS = 1080, 1920, 30
 PERIOD_F = 42                 # frames per full swing (1.4 s, same as reference)
 AMP = 182                     # swing amplitude in px
-ALIGN_SIN = 0.34              # where on the swing objects match outlines
+ALIGN_SIN = 0.0               # objects match outlines at the centre of the swing (its fastest point)
 OUTLINE_RGB = (232, 92, 92)
 OUTLINE_W = 3
-VOICE = os.environ.get("PIPER_VOICE", os.path.join(ASSETS, "en_US-ryan-high.onnx"))
-VOICE_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high/"
+VOICE = os.environ.get("VOICE", "am_fenrir")
 
 DEFAULT_SCRIPT = ("One of the hardest challenges in the world. I challenge you to stop the picture. "
                   "If you can stop it, take a screenshot and send it to us.")
@@ -102,10 +102,10 @@ def tag_image():
 # ---------------------------------------------------------------- layout
 def layout(hero, item):
     """Return list of (sprite, cx, cy) for the 'outline' (target) positions,
-    whole composition centred vertically (slightly high, like the reference)."""
+    whole composition centred on screen."""
     gap, row_gap = 50, 8
     total = hero.height + gap + 3 * item.height + 2 * row_gap
-    y0 = max(150, (H - total) // 2 - 40)
+    y0 = max(150, (H - total) // 2)
     out = [(hero, W // 2, y0 + hero.height // 2)]
     s = item.width + 26                       # spacing in pyramid
     top = y0 + hero.height + gap + item.height // 2
@@ -119,22 +119,40 @@ def layout(hero, item):
 
 
 # ---------------------------------------------------------------- voice
+# Kokoro neural TTS (Apache-2.0, runs offline). am_fenrir is the closest match
+# to the reference voice (~150 Hz, deliberate pace). Others: am_michael, am_adam,
+# am_puck, bm_george (British) ...
+KOKORO_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/"
+KOKORO_FILES = ("kokoro-v1.0.onnx", "voices-v1.0.bin")
+_kokoro = None
+
+
 def ensure_voice():
-    if os.path.exists(VOICE):
-        return
-    print("downloading Piper voice (~120 MB) ...")
-    for ext in ("", ".json"):
-        subprocess.run(["curl", "-sSLf", "-o", VOICE + ext,
-                        VOICE_URL + os.path.basename(VOICE) + ext], check=True)
+    global _kokoro
+    if _kokoro:
+        return _kokoro
+    for f in KOKORO_FILES:
+        path = os.path.join(ASSETS, f)
+        if not os.path.exists(path):
+            print(f"downloading {f} ...")
+            subprocess.run(["curl", "-sSLf", "-o", path, KOKORO_URL + f], check=True)
+    from kokoro_onnx import Kokoro
+    _kokoro = Kokoro(*(os.path.join(ASSETS, f) for f in KOKORO_FILES))
+    return _kokoro
 
 
-def tts(text, wav_path):
-    ensure_voice()
-    subprocess.run([sys.executable, "-m", "piper", "-m", VOICE, "-f", wav_path,
-                    "--length-scale", "1.0", "--sentence-silence", "0.35"],
-                   input=text.encode(), check=True, capture_output=True)
-    with wave.open(wav_path) as w:
-        return w.getnframes() / w.getframerate()
+def tts(text, wav_path, voice=VOICE, speed=0.92, gap=0.3):
+    """Speak each sentence separately with a short natural pause between them."""
+    import re, soundfile as sf
+    k = ensure_voice()
+    lang = "en-gb" if voice.startswith("b") else "en-us"
+    parts, sr = [], 24000
+    for sent in [t for t in re.split(r"(?<=[.!?])\s+", text.strip()) if t]:
+        a, sr = k.create(sent, voice=voice, speed=speed, lang=lang)
+        parts += [np.asarray(a, np.float32), np.zeros(int(gap * sr), np.float32)]
+    audio = np.concatenate(parts[:-1])
+    sf.write(wav_path, audio, sr)
+    return len(audio) / sr
 
 
 def ffmpeg_bin():

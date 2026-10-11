@@ -61,12 +61,29 @@ def load_rgba(path, height, max_w=None):
         im = Image.open(io.BytesIO(png)).convert("RGBA")
     else:
         im = Image.open(path).convert("RGBA")
+        if im.getchannel("A").getextrema()[0] == 255:   # no transparency -> cut it out
+            im = cutout(im)
     bbox = im.getchannel("A").point(lambda a: 255 if a > 8 else 0).getbbox()
     im = im.crop(bbox)
     s = height / im.height
     if max_w and im.width * s > max_w:
         s = max_w / im.width
     return im.resize((max(1, round(im.width * s)), height), Image.LANCZOS)
+
+
+def cutout(im):
+    """Remove the background of a photo / AI image (e.g. ChatGPT render on white)."""
+    from rembg import remove, new_session
+    out = remove(im.convert("RGB"), session=new_session("isnet-general-use"),
+                 post_process_mask=True)
+    a = np.array(out.getchannel("A"))
+    # keep only the largest blob so stray background specks don't get outlines
+    n, lab, stats, _ = cv2.connectedComponentsWithStats((a > 110).astype(np.uint8))
+    if n > 2:
+        keep = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])
+        a[(lab != keep) & (lab != 0)] = 0
+        out.putalpha(Image.fromarray(a))
+    return out
 
 
 def outline_of(im):
